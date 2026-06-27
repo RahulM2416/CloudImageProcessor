@@ -1,36 +1,22 @@
 ```mermaid
-flowchart TD
+flowchart LR
 
-    USER[User]
+    USER([User])
 
-    USER --> RAW[(Blob Storage<br/>raw-images)]
+    USER -->|Upload Image| RAW[(Blob Storage<br/>raw-images)]
 
-    RAW --> EVENT[Blob Created Event]
+    RAW -->|Blob Trigger| FUNC[Azure Function<br/>Python]
 
-    EVENT --> FUNC[Azure Function]
+    FUNC --> PIL[Pillow Library]
 
-    FUNC --> CODE[Python Processing]
+    PIL -->|Watermarked Image| OUT[(Blob Storage<br/>processed-images)]
 
-    CODE --> PIL[Pillow]
-
-    PIL --> OUT[(Blob Storage<br/>processed-images)]
-
-    OUT --> USER
+    OUT -->|Download| USER
 
     subgraph Azure["Azure Cloud"]
-
-        subgraph Storage
-            RAW
-            OUT
-            HOSTS[(azure-webjobs-hosts)]
-            SECRETS[(azure-webjobs-secrets)]
-        end
-
-        subgraph Compute
-            FUNC
-        end
-
-        CODE
+        RAW
+        FUNC
         PIL
+        OUT
     end
 ```
